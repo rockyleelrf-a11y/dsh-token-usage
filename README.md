@@ -117,3 +117,100 @@ token-usage-plugin/
 ## 📄 License
 
 MIT
+
+
+---
+
+# DeepSeek Harness Token Usage & Cost Dashboard (English)
+
+A token usage and cost statistics plugin that embeds directly into the DeepSeek Harness desktop client.
+
+It shows a lightweight card above the **Settings** button in the sidebar with the current model, current session token usage, and estimated cost. Clicking the card opens an in-app modal with full per-model and per-session statistics.
+
+## ✨ Features
+
+- **Lightweight card**
+  - Shows the current model (e.g. `deepseek-v4-pro`)
+  - Shows the current session total token count
+  - Shows the estimated cost of the current session
+  - Automatically updates when the selected session changes
+
+- **Full statistics modal**
+  - Total sessions, total tokens, uncached input, cache reads, output, and estimated cost
+  - Per-model statistics: model, provider, session count, input, cache read, output, cost
+  - Per-session statistics: title, workspace, model, token breakdown, cost
+  - CNY / USD currency toggle
+  - Real-time data from DSH local APIs (`session.list` / `session.models` / `session.history`)
+
+- **Open-source friendly**
+  - Pure client-side plugin, no server logic, no external dependencies
+  - Model prices are bundled from the local DSH pi-ai pricing database, works offline
+  - Unpriced models are explicitly shown as “unpriced / free”
+
+## 📦 One-Click Install
+
+### macOS / Linux
+
+```bash
+cd token-usage-plugin
+./install.sh
+```
+
+### Windows
+
+Run the equivalent PowerShell commands from `README.md` (Chinese section above).
+
+Restart DeepSeek Harness after installation.
+
+## ✅ Verification
+
+1. Open DeepSeek Harness.
+2. Go to **Settings → Plugin Inventory**.
+3. You should see `dsh-token-usage`.
+4. Return to the main screen; the token usage card should appear above the Settings button.
+
+## 🔧 Manual Install (Development)
+
+Copy this repository's `token-usage-plugin` directory to:
+
+```
+~/.dsh/profiles/node_modules/@deepseek-ai/dsh-token-usage
+```
+
+Then append to `~/.dsh/profiles/web/cordis.patch.yml`:
+
+```yaml
+- insert:
+    - id: token-usage
+      name: '@deepseek-ai/dsh-token-usage'
+```
+
+## 🧩 How It Works
+
+- The plugin is loaded through the DSH client module system, so it appears in the plugin inventory.
+- The client plugin mounts to the DOM, watches the sidebar settings button, and inserts the card.
+- Clicking the card calls DSH local RPC APIs to get session lists, model information, and full session history.
+- The browser parses `assistant/chunk` `usage` events and aggregates by model/session/day.
+- Cost calculation uses the local pi-ai pricing database (USD / 1M tokens), with optional CNY/USD display.
+
+## 🛠 FAQ
+
+### The plugin is not visible in the plugin list?
+
+- Make sure DeepSeek Harness has been restarted.
+- Make sure `~/.dsh/profiles/node_modules/@deepseek-ai/dsh-token-usage` exists.
+- Make sure `~/.dsh/profiles/web/cordis.patch.yml` contains `dsh-token-usage`.
+
+### The card does not appear?
+
+- If the plugin shows `failed` in the plugin inventory, open the browser developer tools and check for errors.
+- If the current session is blank (new session), the card will show 0 tokens and “no usage”, which is expected.
+
+### Why is the cost inaccurate?
+
+- Prices come from the local pi-ai pricing database; models not covered are shown as “unpriced / free”.
+- The cost is an estimate. Actual billing is determined by your model provider.
+
+## 📄 License
+
+MIT
