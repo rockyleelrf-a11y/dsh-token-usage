@@ -25,6 +25,7 @@ cp -R "$PLUGIN_SRC/package.json" "$PROFILE_NODE/dsh-token-usage/"
 mkdir -p "$PROFILE_NODE/dsh-token-usage/lib"
 cp "$PLUGIN_SRC/lib/index.js" "$PROFILE_NODE/dsh-token-usage/lib/index.js"
 cp "$PLUGIN_SRC/lib/client.js" "$PROFILE_NODE/dsh-token-usage/lib/client.js"
+  cp "$PLUGIN_SRC/lib/pricing.json" "$PROFILE_NODE/dsh-token-usage/lib/pricing.json" 2>/dev/null || true
 
 echo "==> 写入 profile patch"
 if [ ! -f "$PROFILE_PATCH" ]; then
