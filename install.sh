@@ -7,6 +7,7 @@
 set -euo pipefail
 
 PLUGIN_NAME="@deepseek-ai/dsh-token-usage"
+PLUGIN_DIR_NAME="dsh-token-usage"
 PLUGIN_SRC="$(cd "$(dirname "$0")" && pwd)"
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 PROFILE_NODE="$DSH_HOME/profiles/node_modules/@deepseek-ai"
@@ -19,13 +20,14 @@ if [ ! -d "$DSH_HOME/profiles" ]; then
 fi
 
 echo "==> 安装插件目录"
-mkdir -p "$PROFILE_NODE"
-rm -rf "$PROFILE_NODE/dsh-token-usage"
-cp -R "$PLUGIN_SRC/package.json" "$PROFILE_NODE/dsh-token-usage/"
-mkdir -p "$PROFILE_NODE/dsh-token-usage/lib"
-cp "$PLUGIN_SRC/lib/index.js" "$PROFILE_NODE/dsh-token-usage/lib/index.js"
-cp "$PLUGIN_SRC/lib/client.js" "$PROFILE_NODE/dsh-token-usage/lib/client.js"
-  cp "$PLUGIN_SRC/lib/pricing.json" "$PROFILE_NODE/dsh-token-usage/lib/pricing.json" 2>/dev/null || true
+mkdir -p "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib"
+rm -rf "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib"/*
+cp "$PLUGIN_SRC/package.json" "$PROFILE_NODE/$PLUGIN_DIR_NAME/package.json"
+cp "$PLUGIN_SRC/lib/index.js" "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib/index.js"
+cp "$PLUGIN_SRC/lib/client.js" "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib/client.js"
+cp "$PLUGIN_SRC/lib/pricing.json" "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib/pricing.json" 2>/dev/null || true
+cp "$PLUGIN_SRC/lib/pricing.js" "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib/pricing.js" 2>/dev/null || true
+echo "   已复制到 $PROFILE_NODE/$PLUGIN_DIR_NAME/"
 
 echo "==> 写入 profile patch"
 if [ ! -f "$PROFILE_PATCH" ]; then
