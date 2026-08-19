@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-token-usage",
   "description": "Token usage & cost dashboard embedded in the DeepSeek Harness UI: a lightweight card above Settings showing current model, tokens and cost, plus a modal with full per-model statistics.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
