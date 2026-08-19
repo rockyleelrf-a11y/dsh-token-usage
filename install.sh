@@ -30,21 +30,42 @@ cp "$PLUGIN_SRC/lib/pricing.js" "$PROFILE_NODE/$PLUGIN_DIR_NAME/lib/pricing.js" 
 echo "   已复制到 $PROFILE_NODE/$PLUGIN_DIR_NAME/"
 
 echo "==> 写入 profile patch"
-if [ ! -f "$PROFILE_PATCH" ]; then
-  mkdir -p "$(dirname "$PROFILE_PATCH")"
-  printf '%s\n' "# dsh profile root — an empty entry list." "[]" > "$PROFILE_PATCH"
-fi
+mkdir -p "$(dirname "$PROFILE_PATCH")"
 
-if ! grep -q "dsh-token-usage" "$PROFILE_PATCH"; then
-  cat >> "$PROFILE_PATCH" <<'PATCH'
+if [ -f "$PROFILE_PATCH" ] && grep -q "dsh-token-usage" "$PROFILE_PATCH"; then
+  echo "   token-usage 已存在于 $PROFILE_PATCH，跳过"
+else
+  # Handle the case where the file is empty or contains just "[]"
+  if [ ! -f "$PROFILE_PATCH" ]; then
+    # File doesn't exist yet — create it from scratch
+    cat > "$PROFILE_PATCH" <<'PATCH'
+# Token usage plugin patch
 
 - insert:
     - id: token-usage
       name: '@deepseek-ai/dsh-token-usage'
 PATCH
-  echo "   已追加 token-usage 到 $PROFILE_PATCH"
-else
-  echo "   token-usage 已存在于 $PROFILE_PATCH，跳过"
+    echo "   已创建 $PROFILE_PATCH 并添加 token-usage"
+  elif grep -q '^\[\]$' "$PROFILE_PATCH" 2>/dev/null; then
+    # Empty template — replace the whole file
+    cat > "$PROFILE_PATCH" <<'PATCH'
+# Token usage plugin patch
+
+- insert:
+    - id: token-usage
+      name: '@deepseek-ai/dsh-token-usage'
+PATCH
+    echo "   已替换空模板并添加 token-usage 到 $PROFILE_PATCH"
+  else
+    # Already has content — append cleanly
+    cat >> "$PROFILE_PATCH" <<'PATCH'
+
+- insert:
+    - id: token-usage
+      name: '@deepseek-ai/dsh-token-usage'
+PATCH
+    echo "   已追加 token-usage 到 $PROFILE_PATCH"
+  fi
 fi
 
 echo "✅ 安装完成。请重启 DeepSeek Harness 客户端（或刷新 Web 界面）以加载插件。"
